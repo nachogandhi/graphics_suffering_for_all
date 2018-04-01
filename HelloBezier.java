@@ -22,8 +22,6 @@ public class HelloBezier implements GLEventListener{
 
 	    public int prevMouseX, prevMouseY;
 
-	
-	
 		@Override
 		public void display(GLAutoDrawable drawable) {
 				GL2 gl = drawable.getGL().getGL2();
@@ -33,15 +31,12 @@ public class HelloBezier implements GLEventListener{
 				glu.gluLookAt(cameraCurX, cameraCurY, cameraCurZ,lookAtX, lookAtY, lookAtZ, upX, upY, upZ );
 				init_lines(gl);
 				
-				 //gl.glMap2f(GL2.GL_MAP2_VERTEX_3,0.0f,1.0f,3,4,0.0f,1.0f,12,4,ctrlpoints,0);
 				
-				draw_surface(gl,getShapeA(),3 ,4 ,12,4 ,true);
-				draw_surface(gl,getShapeB(),3 ,4 ,12,4 ,true);
-				//gl.glMap2f(GL2.GL_MAP2_VERTEX_3, 0, 1, 3, 4, 0, 1, 12, 4, ctlarray, 0);
-				//draw_surface(gl, luc(gl), 3,4,12,4, true);
-				
-				
-				
+			     BasicExample(gl);
+			     
+			     
+		
+		
 			}
 
 	@Override
@@ -78,15 +73,52 @@ public class HelloBezier implements GLEventListener{
 	        gl.glLoadIdentity();
 	 
 	        glu.gluPerspective(60, (float) width / height, 1, 1000);
-	        //gl.glFrustum(-30,30,-20,20,1,1000);
-	        //glu.gluLookAt(0.0f, 10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 	        glu.gluLookAt(cameraCurX, cameraCurY, cameraCurZ,lookAtX, lookAtY, lookAtZ, upX, upY, upZ );
 	        gl.glMatrixMode(GL2.GL_MODELVIEW);
 	        gl.glLoadIdentity();
+	      
+	        
 	    }
 	
+	 private void BasicExample(GL2 gl) {
+		 //This example draws the control point lines as well as the surface
+		 //It chooses to show the grid (false for fill)
+		 
+		 drawControls(gl,getShapeA(),4,4);
+		 draw_surface(gl,getShapeA(), 4,4,false);
+		 
+	 }
 	 
-	 private float[] getShapeA() {
+	 
+	 private void drawControls(GL2 gl, float[] ctrlpoints, int uorder, int vorder)
+	 {
+	  
+	    int u,v;
+	    for(u=0;u<uorder;u++)
+	    {
+	        gl.glBegin(GL.GL_LINE_STRIP);
+	        for(v=0;v<vorder;v++)
+	        {
+	            gl.glVertex3f(  ctrlpoints[v*3*uorder+u*3+0],
+	                            ctrlpoints[v*3*uorder+u*3+1],
+	                            ctrlpoints[v*3*uorder+u*3+2]);
+	        }
+	        gl.glEnd();
+	    }
+	    for(v=0;v<vorder;v++)
+	    {
+	        gl.glBegin(GL.GL_LINE_STRIP);
+	        for(u=0;u<uorder;u++)
+	        {
+	            gl.glVertex3f(  ctrlpoints[v*3*uorder+u*3+0],
+	                            ctrlpoints[v*3*uorder+u*3+1],
+	                            ctrlpoints[v*3*uorder+u*3+2]);
+	        }
+	        gl.glEnd();
+	    }       
+	    
+	}
+	  private float[] getShapeA() {
 		 // ctrlpoints[4][4][3]
 		 
 		 float [] ctrlpoints= new float[]// [v][u][xyz] [4][4][3]
@@ -111,81 +143,43 @@ public class HelloBezier implements GLEventListener{
 	      
 	 }
 	 
-	 private float[] getShapeB() {
-		 // ctrlpoints[4][4][3]
+	
+	 
+	 public void draw_surface(GL2 gl, float[] ctrlpoints, int uorder, int vorder, boolean showGrid){
 		 
-		 float [] ctrlpoints= new float[]// [v][u][xyz] [4][4][3]
-	        {
-	                -1.5f,-1.5f,0.0f, -0.5f,-1.5f,0.0f,
-	                0.5f,-1.5f,0.0f,  1.5f,-1.5f,0.0f
-	          ,
-	                -1.5f,-0.5f,0.0f, -0.5f,-0.5f,0.0f,
-	                0.5f,-0.5f,0.0f,  1.5f,-0.5f,0.0f
-	          ,
-	                -1.5f,0.5f,0.0f,  -0.5f,0.5f,0.0f,
-	                0.5f,0.5f, 0.0f,  1.5f,0.5f,0.0f
-	          ,
-	                -1.5f,1.5f,0.0f,  -0.5f,1.5f,0.0f,
-	                0.5f,1.5f,0.0f,   1.5f,1.5f,0.0f
-	        }; 
-	 
-		 float offset = -5f;
-	      // adjust z-values of the 4 "center" points
-	      ctrlpoints[18-1]= ctrlpoints[21-1]=ctrlpoints[30-1]= ctrlpoints[33-1]=offset;
-	      return ctrlpoints;
-	      
-	 }
-
-	 private void drawControls(GL2 gl, float[] ctrlpoints, int uorder, int vorder)
-	 {
-	    // assuming they are offset correctly
-	    // stdMaterials.setMaterial(gl, stdMaterials.MAT_BLACK_PLASTIC,GL.GL_FRONT_AND_BACK);
-	   
-	    int u,v;
-	    for(u=0;u<uorder;u++)
-	    {
-	        gl.glBegin(GL.GL_LINE_STRIP);
-	        for(v=0;v<4;v++)
-	        {
-	            gl.glVertex3f(  ctrlpoints[v*12+u*3+0],
-	                            ctrlpoints[v*12+u*3+1],
-	                            ctrlpoints[v*12+u*3+2]);
-	        }
-	        gl.glEnd();
-	    }
-	    for(v=0;v<vorder;v++)
-	    {
-	        gl.glBegin(GL.GL_LINE_STRIP);
-	        for(u=0;u<uorder;u++)
-	        {
-	            gl.glVertex3f(  ctrlpoints[v*12+u*3+0],
-	                            ctrlpoints[v*12+u*3+1],
-	                            ctrlpoints[v*12+u*3+2]);
-	        }
-	        gl.glEnd();
-	    }       
-	    
-	}
-	 
-	 
-	 public void draw_surface(GL2 gl, float[] ctrlpoints,int ustride , int uorder ,int vstride , int vorder,boolean showGrid){
-		 
-		 //gl.glMap2f(GL2.GL_MAP2_VERTEX_3,0.0f,1.0f,3,4,0.0f,1.0f,12,4,ctrlpoints,0);
-		 gl.glMap2f(GL2.GL_MAP2_VERTEX_3,0.0f,1.0f,ustride,uorder,0.0f,1.0f,vstride,vorder,ctrlpoints,0);
+		 gl.glMap2f(GL2.GL_MAP2_VERTEX_3,0.0f,1.0f,3,uorder,0.0f,1.0f,3*uorder,vorder,ctrlpoints,0);
 		 gl.glMapGrid2f(20,0.0f,1.0f,20,0.0f, 1.0f);
 		 if(showGrid)
 		     gl.glEvalMesh2(GL2.GL_LINE, 0, 20, 0, 20);
 		 else
 		     gl.glEvalMesh2(GL2.GL_FILL, 0, 20, 0, 20);
+
 	}
 	 
-	 
+	
+	
+
+	private void draw_points(GL2 gl, float[] points){
+		
+		gl.glPointSize(4);
+		gl.glBegin(GL.GL_POINTS);
+		for( int i = 0; i < points.length - 2; i += 3) {
+			gl.glVertex3f(points[i], points[i+1], points[i+2]);
+			//System.out.println("Hello: " + i + " " + i+1 + " " + i +2 + "");
+		}
+		gl.glEnd();
+		
+	 }
+	
+	
+	//CAMERA FUNCIONALITY PAST HERE 
+	
 	 private void init_camera() {
 		 cameraAngleAboutY = 0.0;
 
 			cameraDefaultX = 0.0;
-			cameraDefaultY = 0.0;
-			cameraDefaultZ = 5.0;
+			cameraDefaultY = 3.0;
+			cameraDefaultZ = 10.0;
 
 			cameraCurX = cameraDefaultX;
 			cameraCurY = cameraDefaultY;
@@ -222,55 +216,6 @@ public class HelloBezier implements GLEventListener{
 		 
 	 }
 
-	 private float[] luc(GL2 gl) {
-		 
-	//	 Texture tex = new Texture(0); 
-	//	 tex.enable(gl);
-	// tex.bind(gl);
-		 
-		 float top = 0.75f, bottom = 0.5f, highMid = 0.125f, lowMid = 1.5f;
-			float dist = 0.552284749831f;
-			float[] ctlarray = new float[] {
-					0f,0f,1f * bottom,
-					dist * bottom,0f,1f * bottom,
-					1f * bottom,0f,dist * bottom,
-					1f * bottom,0f,0f,
-					
-					0f,0.75f,1f * lowMid,
-					dist * lowMid,0.75f,1f * lowMid,
-					1f * lowMid,0.75f,dist * lowMid,
-					1f * lowMid,0.75f,0f,
-					
-					0f,1.5f,1f * highMid,
-					dist * highMid,1.5f,1f * highMid,
-					1f * highMid,1.5f,dist * highMid,
-					1f * highMid,1.5f,0f,
-					
-					0f,2.25f,1f * top,
-					dist * top,2.25f,1f * top,
-					1f * top,2.25f,dist * top,
-					1f * top,2.25f,0f
-			};
-			
-			float[] texarray = new float[] {
-					0.0f,0.0f,
-					0.0f,1f,
-					0.25f,1f,
-					0.25f,0.0f
-			};
-			
-			
-			gl.glColor3f(1, 0, 0);
-			gl.glMap2f(GL2.GL_MAP2_VERTEX_3, 0, 1, 3, 4, 0, 1, 12, 4, ctlarray, 0);
-			//gl.glMap2f(GL2.GL_MAP2_TEXTURE_COORD_2, 0, 1, 2, 2, 0, 1, 4, 2, texarray, 0);
-			
-			gl.glMapGrid2f(20, 0, 1, 20, 0, 1);
-			gl.glEvalMesh2(GL2.GL_FILL, 0, 20, 0, 20);
-		 
-			return ctlarray;
-	 }
-
-	 
 	 
 	
 }
